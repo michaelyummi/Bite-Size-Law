@@ -178,4 +178,26 @@ INSERT INTO cases (
     'Marked a major shift in modern constitutional history by limiting the scope of Congress''s Commerce Clause power and protecting state sovereignty (devolution).'
 );
 
+INSERT INTO cases (
+    name,
+    year,
+    court,
+    facts,
+    plaintiff_argument,
+    defendant_argument,
+    ruling,
+    opinion,
+    significance
+) VALUES (
+    'Schenck v. United States',
+    '1919',
+    'United States Supreme Court',
+    'During World War I, socialist activists were arrested and convicted under the Espionage Act for distributing leaflets that urged draftees to peacefully resist military conscription.',
+    'Schenck argued that the leaflets were protected under the First Amendment freedom of speech and expression.',
+    'The United States government argued that speech aimed at disrupting the military draft during wartime directly threatens national security.',
+    'The Court held that the conviction was constitutional and that free speech protections can be limited during times of war.',
+    'Justice Holmes wrote that speech is not protected if the words used create a clear and present danger to national safety.',
+    'It established the clear and present danger test, setting a baseline standard for when the government can limit political speech.'
+);
+
 COMMIT;
