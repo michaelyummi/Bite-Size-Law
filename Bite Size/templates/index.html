@@ -1,0 +1,835 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bite Size Law</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <div class="container">
+    <h1>Bite Size Law</h1>
+
+    <div class="tab-bar" role="tablist" aria-label="Case views">
+      <button type="button" class="tab-btn active" data-tab="research">Research</button>
+      <button type="button" class="tab-btn" data-tab="saved">Saved Cases</button>
+      <button type="button" class="tab-btn" data-tab="database">Case Database</button>
+    </div>
+
+    <section id="research-view" class="tab-panel active">
+      <h3>Insert a case name</h3>
+      <p class="example">Example: "Marbury v. Madison"</p>
+
+      <form id="case-form">
+        <div class="button-row">
+          <input type="text" id="case-input" placeholder="Type in a case name..." autocomplete="off" required />
+          <button type="submit" id="generate-case-btn">Generate Case</button>
+          <button type="button" id="add-case-btn">Add Case</button>
+          <button type="button" id="clear-case-btn" class="clear-btn">Clear Case</button>
+        </div>
+      </form>
+
+      <div id="add-case-panel" class="add-case-panel" style="display: none; margin-top: 16px;">
+        <form id="add-case-form">
+          <div class="field-grid">
+            <label>
+              Case name
+              <input type="text" name="name" placeholder="e.g., Obergefell v. Hodges" required />
+            </label>
+            <label>
+              Year
+              <input type="text" name="year" placeholder="2015" />
+            </label>
+            <label>
+              Court
+              <input type="text" name="court" placeholder="United States Supreme Court" />
+            </label>
+            <label class="full-width">
+              Facts
+              <textarea name="facts" rows="3" placeholder="Explain the background facts..."></textarea>
+            </label>
+            <label class="full-width">
+              Plaintiff's argument
+              <textarea name="plaintiff_argument" rows="3" placeholder="Plaintiff's argument..."></textarea>
+            </label>
+            <label class="full-width">
+              Defendant's argument
+              <textarea name="defendant_argument" rows="3" placeholder="Defendant's argument..."></textarea>
+            </label>
+            <label class="full-width">
+              Ruling
+              <textarea name="ruling" rows="3" placeholder="What was the ruling?"></textarea>
+            </label>
+            <label class="full-width">
+              Opinion
+              <textarea name="opinion" rows="3" placeholder="Key opinion language..."></textarea>
+            </label>
+            <label class="full-width">
+              Significance
+              <textarea name="significance" rows="3" placeholder="Why the case matters..."></textarea>
+            </label>
+          </div>
+          <div class="button-row" style="margin-top: 12px;">
+            <button type="submit">Save Case</button>
+            <button type="button" id="cancel-add-case-btn" class="clear-btn">Cancel</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="case-suggestions" class="suggestions" aria-live="polite"></div>
+
+      <div id="result" class="result-box">
+        <p>Case summary will appear here.</p>
+      </div>
+
+      <div id="save-to-folder-panel" class="save-folder-panel" style="display:none;">
+        <label for="save-folder-select">Save this case to a folder</label>
+        <div class="save-folder-row">
+          <select id="save-folder-select" aria-label="Saved case folders">
+            <option value="">No folders available</option>
+          </select>
+          <button type="button" id="save-case-to-folder-btn">Save to Folder</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="saved-view" class="tab-panel">
+      <div class="saved-header">
+        <h2>Saved Cases</h2>
+      </div>
+
+      <form id="folder-form" class="folder-form">
+        <label class="folder-form-label" for="folder-name-input">Add a new folder</label>
+        <div class="folder-form-row">
+          <input type="text" id="folder-name-input" placeholder="e.g., Constitutional Law" autocomplete="off" />
+          <button type="submit">Add Folder</button>
+        </div>
+      </form>
+
+      <div id="saved-case-detail" class="saved-case-detail" style="display: none;"></div>
+      <div id="saved-folders-container" class="saved-folders-container"></div>
+    </section>
+
+    <section id="database-view" class="tab-panel">
+      <div class="database-header">
+        <h2>Case Database</h2>
+      </div>
+
+      <div class="database-layout">
+        <div class="database-list-panel">
+          <input id="database-search" type="text" placeholder="Search case database..." autocomplete="off" />
+          <div id="database-case-list" class="database-case-list"></div>
+        </div>
+
+        <div class="database-editor-panel">
+          <form id="database-case-form" class="database-case-form">
+            <input type="hidden" id="database-case-id" name="id" />
+            <div class="field-grid">
+              <label>
+                Case name
+                <input type="text" name="name" required />
+              </label>
+              <label>
+                Year
+                <input type="text" name="year" />
+              </label>
+              <label>
+                Court
+                <input type="text" name="court" />
+              </label>
+              <label class="full-width">
+                Facts
+                <textarea name="facts" rows="3"></textarea>
+              </label>
+              <label class="full-width">
+                Plaintiff's argument
+                <textarea name="plaintiff_argument" rows="3"></textarea>
+              </label>
+              <label class="full-width">
+                Defendant's argument
+                <textarea name="defendant_argument" rows="3"></textarea>
+              </label>
+              <label class="full-width">
+                Ruling
+                <textarea name="ruling" rows="3"></textarea>
+              </label>
+              <label class="full-width">
+                Opinion
+                <textarea name="opinion" rows="3"></textarea>
+              </label>
+              <label class="full-width">
+                Significance
+                <textarea name="significance" rows="3"></textarea>
+              </label>
+            </div>
+            <div class="button-row database-form-actions">
+              <button type="submit">Save Changes</button>
+              <button type="button" id="database-reset-btn" class="clear-btn">Reset</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const form = document.getElementById('case-form');
+    const input = document.getElementById('case-input');
+    const result = document.getElementById('result');
+    const suggestions = document.getElementById('case-suggestions');
+    const clearBtn = document.getElementById('clear-case-btn');
+    const addCaseBtn = document.getElementById('add-case-btn');
+    const addCasePanel = document.getElementById('add-case-panel');
+    const addCaseForm = document.getElementById('add-case-form');
+    const cancelAddCaseBtn = document.getElementById('cancel-add-case-btn');
+    const saveToFolderPanel = document.getElementById('save-to-folder-panel');
+    const saveFolderSelect = document.getElementById('save-folder-select');
+    const saveCaseToFolderBtn = document.getElementById('save-case-to-folder-btn');
+    const folderForm = document.getElementById('folder-form');
+    const folderNameInput = document.getElementById('folder-name-input');
+    const savedFoldersContainer = document.getElementById('saved-folders-container');
+    const savedCaseDetail = document.getElementById('saved-case-detail');
+    const databaseSearchInput = document.getElementById('database-search');
+    const databaseCaseForm = document.getElementById('database-case-form');
+    let allCases = [];
+    let databaseCases = [];
+    let currentCaseSummary = null;
+    let expandedFolderId = null;
+
+    function normalizeText(value) {
+      return String(value || '').toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+    }
+
+    function resetView() {
+      input.value = '';
+      result.innerHTML = '<p>Case summary will appear here.</p>';
+      result.style.display = 'block';
+      suggestions.innerHTML = '';
+      currentCaseSummary = null;
+      saveToFolderPanel.style.display = 'none';
+    }
+
+    function switchTab(tabName) {
+      const tabs = document.querySelectorAll('.tab-btn');
+      const panels = document.querySelectorAll('.tab-panel');
+
+      tabs.forEach((button) => {
+        button.classList.toggle('active', button.dataset.tab === tabName);
+      });
+
+      panels.forEach((panel) => {
+        panel.classList.toggle('active', panel.id === `${tabName}-view`);
+      });
+    }
+
+    document.querySelectorAll('.tab-btn').forEach((button) => {
+      button.addEventListener('click', () => switchTab(button.dataset.tab));
+    });
+
+    async function fetchCaseSummary(caseName) {
+      result.style.display = 'block';
+      result.innerHTML = '<p>Working on your case summary...</p>';
+      saveToFolderPanel.style.display = 'none';
+
+      try {
+        const response = await fetch('/api/case', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ case_name: caseName })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          currentCaseSummary = null;
+          result.innerHTML = `
+            <p><strong>${data.error || 'Something went wrong.'}</strong></p>
+            <p>Add the case to CASE_DATA in bitesizelaw.py using the same field structure as the existing examples.</p>
+          `;
+          return;
+        }
+
+        currentCaseSummary = data;
+        result.innerHTML = `
+          <h2>${data.name || 'Case'}</h2>
+          <p><strong>Year:</strong> ${data.year || 'Not specified'}</p>
+          <p><strong>Court:</strong> ${data.court || 'Not specified'}</p>
+          <p><strong>Facts:</strong> ${data.facts || 'Not provided'}</p>
+          <p><strong>Plaintiff's Argument:</strong> ${data.plaintiff_argument || 'Not provided'}</p>
+          <p><strong>Defendant's Argument:</strong> ${data.defendant_argument || 'Not provided'}</p>
+          <p><strong>Ruling:</strong> ${data.ruling || 'Not provided'}</p>
+          <p><strong>Opinion:</strong> ${data.opinion || 'Not provided'}</p>
+          <p><strong>Significance:</strong> ${data.significance || 'Not provided'}</p>
+        `;
+
+        await refreshFolderOptions();
+        saveToFolderPanel.style.display = 'block';
+      } catch (error) {
+        currentCaseSummary = null;
+        result.innerHTML = '<p>There was an error contacting the server.</p>';
+      }
+    }
+
+    async function loadCases() {
+      try {
+        const response = await fetch('/api/cases');
+        const data = await response.json();
+        allCases = Array.isArray(data.cases) ? data.cases : [];
+      } catch (error) {
+        allCases = [];
+      }
+    }
+
+    async function ensureCasesLoaded() {
+      if (!allCases.length) {
+        await loadCases();
+      }
+    }
+
+    function renderSuggestions(query = '') {
+      const trimmedQuery = query.trim();
+
+      if (!trimmedQuery) {
+        suggestions.innerHTML = '';
+        return;
+      }
+
+      const filteredCases = allCases.filter((caseName) =>
+        normalizeText(caseName).includes(normalizeText(trimmedQuery))
+      );
+
+      if (!filteredCases.length) {
+        suggestions.innerHTML = '<div class="suggestion-empty">No matching case found.</div>';
+        return;
+      }
+
+      suggestions.innerHTML = filteredCases
+        .slice(0, 8)
+        .map((caseName) => `
+          <button type="button" class="suggestion-item" data-case-name="${caseName}">${caseName}</button>
+        `)
+        .join('');
+
+      suggestions.querySelectorAll('.suggestion-item').forEach((button) => {
+        button.addEventListener('click', () => {
+          const caseName = button.dataset.caseName;
+          input.value = caseName;
+          suggestions.innerHTML = '';
+          fetchCaseSummary(caseName);
+        });
+      });
+    }
+
+    async function refreshFolderOptions() {
+      try {
+        const response = await fetch('/api/saved-folders');
+        const data = await response.json();
+        const folders = Array.isArray(data.folders) ? data.folders : [];
+
+        if (!folders.length) {
+          saveFolderSelect.innerHTML = '<option value="">No folders available</option>';
+          saveFolderSelect.disabled = true;
+          saveCaseToFolderBtn.disabled = true;
+          return folders;
+        }
+
+        saveFolderSelect.innerHTML = folders
+          .map((folder) => `<option value="${folder.id}">${folder.name}</option>`)
+          .join('');
+        saveFolderSelect.disabled = false;
+        saveCaseToFolderBtn.disabled = false;
+        return folders;
+      } catch (error) {
+        saveFolderSelect.innerHTML = '<option value="">No folders available</option>';
+        saveFolderSelect.disabled = true;
+        saveCaseToFolderBtn.disabled = true;
+        return [];
+      }
+    }
+
+    function hideSavedCaseDetail() {
+      savedCaseDetail.style.display = 'none';
+      savedCaseDetail.innerHTML = '';
+    }
+
+    function renderSavedCaseDetail(folderName, caseItem) {
+      savedCaseDetail.style.display = 'block';
+      savedCaseDetail.innerHTML = `
+        <div class="saved-case-detail-card">
+          <div class="saved-case-detail-header">
+            <h3>${caseItem.name || 'Saved Case'}</h3>
+            <button type="button" id="close-saved-case-btn" class="clear-btn">Close Case</button>
+          </div>
+          <p><strong>Folder:</strong> ${folderName}</p>
+          <p><strong>Year:</strong> ${caseItem.year || 'Not specified'}</p>
+          <p><strong>Court:</strong> ${caseItem.court || 'Not specified'}</p>
+          <p><strong>Facts:</strong> ${caseItem.facts || 'Not provided'}</p>
+          <p><strong>Plaintiff's Argument:</strong> ${caseItem.plaintiff_argument || 'Not provided'}</p>
+          <p><strong>Defendant's Argument:</strong> ${caseItem.defendant_argument || 'Not provided'}</p>
+          <p><strong>Ruling:</strong> ${caseItem.ruling || 'Not provided'}</p>
+          <p><strong>Opinion:</strong> ${caseItem.opinion || 'Not provided'}</p>
+          <p><strong>Significance:</strong> ${caseItem.significance || 'Not provided'}</p>
+        </div>
+      `;
+
+      const closeSavedCaseBtn = document.getElementById('close-saved-case-btn');
+      if (closeSavedCaseBtn) {
+        closeSavedCaseBtn.addEventListener('click', hideSavedCaseDetail);
+      }
+    }
+
+    function renderSavedFolders(folders) {
+      if (!folders.length) {
+        savedFoldersContainer.innerHTML = '<div class="saved-empty">No saved folders yet. Create one to start collecting cases.</div>';
+        return;
+      }
+
+      savedFoldersContainer.innerHTML = folders
+        .map((folder) => {
+          const cases = Array.isArray(folder.cases) ? folder.cases : [];
+          const isOpen = Number(expandedFolderId) === Number(folder.id);
+          const caseMarkup = cases.length
+            ? cases.map((caseItem) => `
+                <li class="saved-case-item">
+                  <div class="saved-case-row">
+                    <button type="button" class="saved-case-link" data-folder-name="${folder.name}" data-case-name="${caseItem.name}">${caseItem.name}</button>
+                    <button type="button" class="remove-case-btn" data-case-id="${caseItem.id}" data-case-name="${caseItem.name}">Remove</button>
+                  </div>
+                </li>
+              `).join('')
+            : '<p class="saved-empty-case">No cases saved in this folder yet.</p>';
+
+          return `
+            <div class="saved-folder-card">
+              <div class="saved-folder-header">
+                <h3>${folder.name}</h3>
+                <div class="folder-actions">
+                  <button type="button" class="folder-toggle-btn" data-folder-id="${folder.id}">${isOpen ? 'Close Folder' : 'Open Folder'}</button>
+                  <button type="button" class="rename-folder-btn" data-folder-id="${folder.id}" data-folder-name="${folder.name}">Rename</button>
+                  <button type="button" class="delete-folder-btn" data-folder-id="${folder.id}">Delete Folder</button>
+                </div>
+              </div>
+              <div class="saved-folder-body" style="display: ${isOpen ? 'block' : 'none'};">
+                <ul class="saved-case-list">${caseMarkup}</ul>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+
+      document.querySelectorAll('.delete-folder-btn').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const folderId = Number(button.dataset.folderId);
+          const folderName = folders.find((entry) => Number(entry.id) === folderId)?.name || 'this folder';
+          if (!window.confirm(`Delete the folder "${folderName}" and all of its saved cases?`)) {
+            return;
+          }
+
+          const response = await fetch(`/api/saved-folders/${folderId}`, { method: 'DELETE' });
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            window.alert(errorData.error || 'Unable to delete folder.');
+            return;
+          }
+
+          hideSavedCaseDetail();
+          await loadSavedCases();
+          await refreshFolderOptions();
+        });
+      });
+
+      document.querySelectorAll('.rename-folder-btn').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const folderId = Number(button.dataset.folderId);
+          const currentName = button.dataset.folderName || 'Folder';
+          const newName = window.prompt('Rename folder:', currentName);
+          if (newName === null) {
+            return;
+          }
+
+          const trimmedName = newName.trim();
+          if (!trimmedName) {
+            window.alert('Folder name cannot be empty.');
+            return;
+          }
+
+          const response = await fetch(`/api/saved-folders/${folderId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: trimmedName })
+          });
+
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            window.alert(data.error || 'Unable to rename folder.');
+            return;
+          }
+
+          await loadSavedCases();
+          await refreshFolderOptions();
+        });
+      });
+
+      document.querySelectorAll('.folder-toggle-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+          const folderId = Number(button.dataset.folderId);
+          expandedFolderId = expandedFolderId === folderId ? null : folderId;
+          loadSavedCases();
+        });
+      });
+
+      document.querySelectorAll('.saved-case-link').forEach((button) => {
+        button.addEventListener('click', () => {
+          const folderName = button.dataset.folderName;
+          const caseName = button.dataset.caseName;
+          const folder = folders.find((entry) => entry.name === folderName);
+          const caseItem = (folder && Array.isArray(folder.cases) ? folder.cases : []).find((item) => item.name === caseName);
+          if (caseItem) {
+            renderSavedCaseDetail(folderName, caseItem);
+          }
+        });
+      });
+
+      document.querySelectorAll('.remove-case-btn').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const caseId = Number(button.dataset.caseId);
+          const caseName = button.dataset.caseName || 'this case';
+          if (!window.confirm(`Remove "${caseName}" from this folder?`)) {
+            return;
+          }
+
+          const response = await fetch(`/api/saved-cases/${caseId}`, { method: 'DELETE' });
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            window.alert(errorData.error || 'Unable to remove case.');
+            return;
+          }
+
+          hideSavedCaseDetail();
+          await loadSavedCases();
+        });
+      });
+    }
+
+    async function loadSavedCases() {
+      try {
+        const response = await fetch('/api/saved-cases');
+        const data = await response.json();
+        const folders = Array.isArray(data.folders) ? data.folders : [];
+        renderSavedFolders(folders);
+        return folders;
+      } catch (error) {
+        renderSavedFolders([]);
+        return [];
+      }
+    }
+
+    function renderDatabaseCaseList(cases) {
+      const databaseCaseList = document.getElementById('database-case-list');
+      if (!cases.length) {
+        databaseCaseList.innerHTML = '<div class="database-empty">No cases in the database.</div>';
+        return;
+      }
+
+      const searchValue = normalizeText(databaseSearchInput.value);
+      const filteredCases = searchValue
+        ? cases.filter((entry) => normalizeText(entry.name).includes(searchValue))
+        : cases;
+
+      if (!filteredCases.length) {
+        databaseCaseList.innerHTML = '<div class="database-empty">No cases match that search.</div>';
+        return;
+      }
+
+      databaseCaseList.innerHTML = filteredCases.map((entry) => `
+        <div class="database-case-item">
+          <span>${entry.name}</span>
+          <div class="database-case-actions">
+            <button type="button" class="database-edit-btn" data-case-id="${entry.id}">Edit</button>
+            <button type="button" class="database-remove-btn" data-case-id="${entry.id}">Remove</button>
+          </div>
+        </div>
+      `).join('');
+
+      document.querySelectorAll('.database-edit-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+          const caseId = Number(button.dataset.caseId);
+          const selectedCase = filteredCases.find((item) => Number(item.id) === caseId) || cases.find((item) => Number(item.id) === caseId);
+          if (!selectedCase) {
+            return;
+          }
+
+          const form = document.getElementById('database-case-form');
+          form.elements.id.value = selectedCase.id;
+          form.elements.name.value = selectedCase.name || '';
+          form.elements.year.value = selectedCase.year || '';
+          form.elements.court.value = selectedCase.court || '';
+          form.elements.facts.value = selectedCase.facts || '';
+          form.elements.plaintiff_argument.value = selectedCase.plaintiff_argument || '';
+          form.elements.defendant_argument.value = selectedCase.defendant_argument || '';
+          form.elements.ruling.value = selectedCase.ruling || '';
+          form.elements.opinion.value = selectedCase.opinion || '';
+          form.elements.significance.value = selectedCase.significance || '';
+          form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+
+      document.querySelectorAll('.database-remove-btn').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const caseId = Number(button.dataset.caseId);
+          const caseName = cases.find((item) => Number(item.id) === caseId)?.name || 'this case';
+          if (!window.confirm(`Remove "${caseName}" from the case database?`)) {
+            return;
+          }
+
+          const response = await fetch(`/api/cases/${caseId}`, { method: 'DELETE' });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            window.alert(data.error || 'Unable to remove case.');
+            return;
+          }
+
+          databaseCaseForm.reset();
+          databaseCaseForm.elements.id.value = '';
+          await loadDatabaseCases();
+          await loadCases();
+        });
+      });
+    }
+
+    async function loadDatabaseCases() {
+      try {
+        const response = await fetch('/api/cases/all');
+        const data = await response.json();
+        const cases = Array.isArray(data.cases) ? data.cases : [];
+        databaseCases = cases;
+        renderDatabaseCaseList(cases);
+        return cases;
+      } catch (error) {
+        databaseCases = [];
+        renderDatabaseCaseList([]);
+        return [];
+      }
+    }
+
+    async function saveDatabaseCase(event) {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const caseId = Number(form.elements.id.value);
+      if (!caseId) {
+        window.alert('Select a case before saving changes.');
+        return;
+      }
+
+      const payload = {
+        name: form.elements.name.value,
+        year: form.elements.year.value,
+        court: form.elements.court.value,
+        facts: form.elements.facts.value,
+        plaintiff_argument: form.elements.plaintiff_argument.value,
+        defendant_argument: form.elements.defendant_argument.value,
+        ruling: form.elements.ruling.value,
+        opinion: form.elements.opinion.value,
+        significance: form.elements.significance.value,
+      };
+
+      const response = await fetch(`/api/cases/${caseId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        window.alert(data.error || 'Unable to update the case.');
+        return;
+      }
+
+      await loadDatabaseCases();
+      await loadCases();
+      window.alert('Case updated successfully.');
+    }
+
+    async function saveCurrentCaseToFolder() {
+      if (!currentCaseSummary) {
+        result.innerHTML = '<p>Please generate a case summary before saving it.</p>';
+        return;
+      }
+
+      const folderId = saveFolderSelect.value;
+      if (!folderId) {
+        result.innerHTML = '<p>Please create a folder before saving a case.</p>';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/saved-cases/save', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            folder_id: Number(folderId),
+            case: currentCaseSummary
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          result.innerHTML = `<p><strong>${data.error || 'Unable to save this case.'}</strong></p>`;
+          return;
+        }
+
+        result.innerHTML = `
+          <h2>${currentCaseSummary.name}</h2>
+          <p><strong>Saved to folder:</strong> ${data.folder_name}</p>
+          <p>Case was added successfully.</p>
+          ${result.innerHTML.includes('<h2>') ? result.innerHTML.split('</h2>')[1] : ''}
+        `;
+        await loadSavedCases();
+        await refreshFolderOptions();
+      } catch (error) {
+        result.innerHTML = '<p>There was an error saving the case.</p>';
+      }
+    }
+
+    async function createFolder(folderName) {
+      const trimmedName = folderName.trim();
+      if (!trimmedName) {
+        result.innerHTML = '<p>Please enter a folder name.</p>';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/saved-folders', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ name: trimmedName })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          result.innerHTML = `<p><strong>${data.error || 'Unable to create folder.'}</strong></p>`;
+          return;
+        }
+
+        folderNameInput.value = '';
+        await loadSavedCases();
+        await refreshFolderOptions();
+      } catch (error) {
+        result.innerHTML = '<p>There was an error creating the folder.</p>';
+      }
+    }
+
+    input.addEventListener('input', async (event) => {
+      const query = event.target.value;
+      await ensureCasesLoaded();
+      renderSuggestions(query);
+    });
+
+    input.addEventListener('focus', async () => {
+      await ensureCasesLoaded();
+      renderSuggestions(input.value);
+    });
+
+    databaseSearchInput.addEventListener('input', () => {
+      renderDatabaseCaseList(databaseCases);
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!event.target.closest('.suggestion-item') && !event.target.closest('#case-input')) {
+        suggestions.innerHTML = '';
+      }
+    });
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const caseName = input.value.trim();
+
+      if (!caseName) {
+        result.innerHTML = '<p>Please type in a case name.</p>';
+        return;
+      }
+
+      fetchCaseSummary(caseName);
+    });
+
+    clearBtn.addEventListener('click', () => {
+      resetView();
+    });
+
+    addCaseBtn.addEventListener('click', () => {
+      const isHidden = addCasePanel.style.display === 'none';
+      addCasePanel.style.display = isHidden ? 'block' : 'none';
+      result.style.display = 'block';
+      if (isHidden) {
+        addCaseForm.reset();
+      }
+    });
+
+    cancelAddCaseBtn.addEventListener('click', () => {
+      addCasePanel.style.display = 'none';
+      result.style.display = 'block';
+      addCaseForm.reset();
+    });
+
+    saveCaseToFolderBtn.addEventListener('click', saveCurrentCaseToFolder);
+
+    folderForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      createFolder(folderNameInput.value);
+    });
+
+    addCaseForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(addCaseForm);
+      const payload = Object.fromEntries(formData.entries());
+
+      try {
+        const response = await fetch('/api/cases/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          result.innerHTML = `<p><strong>${data.error || 'Unable to add case.'}</strong></p>`;
+          return;
+        }
+
+        addCasePanel.style.display = 'none';
+        addCaseForm.reset();
+        await loadCases();
+        await loadDatabaseCases();
+        input.value = data.name || '';
+        fetchCaseSummary(data.name || '');
+      } catch (error) {
+        result.innerHTML = '<p>There was an error saving the case.</p>';
+      }
+    });
+
+    databaseCaseForm.addEventListener('submit', saveDatabaseCase);
+    document.getElementById('database-reset-btn').addEventListener('click', () => {
+      databaseCaseForm.reset();
+      databaseCaseForm.elements.id.value = '';
+    });
+
+    loadCases();
+    loadDatabaseCases();
+    refreshFolderOptions();
+    loadSavedCases();
+  </script>
+</body>
+</html>
