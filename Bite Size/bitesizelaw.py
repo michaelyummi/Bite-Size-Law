@@ -8,7 +8,7 @@ import sqlite3
 #start server with following command:
 #cd /home/user/bitesizelaw && . .venv/bin/activate && python "Bite Size/bitesizelaw.py"
 
-#paste into browser for website
+#paste into browser on host device for website
 #http://127.0.0.1:5000
 
 #use this command to kill previous server
@@ -720,7 +720,6 @@ def api_add_case():
 
 
 if __name__ == "__main__":
-    debug_mode = os.environ.get("FLASK_DEBUG", "0").lower() in {"1", "true", "yes", "on"}
-    app.run(debug=debug_mode, host="0.0.0.0", port=5000, use_reloader=debug_mode)
+    app.run(debug=True, host="0.0.0.0", port=5000)
 
 
