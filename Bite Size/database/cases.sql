@@ -1,3 +1,11 @@
+--sqlite3 "Bite Size/database/cases.db"
+--SELECT * FROM cases;        SHOWS EVERYTHING IN CASES DB
+--SELECT * FROM saved_case_folders;
+--SELECT * FROM saved_cases;
+--SELECT name FROM cases;     SHOWS 'name' element of each element in table
+--.schema cases               SHOWS ELEMENT LAYOUT FOR TABLE
+--SELECT * FROM cases WHERE name = 'CASE NAME';  FINDS WHERE AN ELEMENT IS EQUAL TO 'given value'
+
 PRAGMA foreign_keys = OFF;
 BEGIN TRANSACTION;
 
@@ -135,15 +143,8 @@ INSERT INTO cases (
 );
 
 INSERT INTO cases (
-    name,
-    year,
-    court,
-    facts,
-    plaintiff_argument,
-    defendant_argument,
-    ruling,
-    opinion,
-    significance
+    name, year, court, facts, plaintiff_argument,
+    defendant_argument, ruling, opinion, significance
 ) VALUES (
     'Template Case Information',
     '2026',
@@ -157,15 +158,8 @@ INSERT INTO cases (
 );
 
 INSERT INTO cases (
-    name,
-    year,
-    court,
-    facts,
-    plaintiff_argument,
-    defendant_argument,
-    ruling,
-    opinion,
-    significance
+    name, year, court, facts, plaintiff_argument,
+    defendant_argument, ruling, opinion, significance
 ) VALUES (
     'United States v. Lopez',
     '1995',
@@ -179,15 +173,8 @@ INSERT INTO cases (
 );
 
 INSERT INTO cases (
-    name,
-    year,
-    court,
-    facts,
-    plaintiff_argument,
-    defendant_argument,
-    ruling,
-    opinion,
-    significance
+    name, year, court, facts, plaintiff_argument,
+    defendant_argument, ruling, opinion, significance
 ) VALUES (
     'Schenck v. United States',
     '1919',
@@ -198,6 +185,20 @@ INSERT INTO cases (
     'The Court held that the conviction was constitutional and that free speech protections can be limited during times of war.',
     'Justice Holmes wrote that speech is not protected if the words used create a clear and present danger to national safety.',
     'It established the clear and present danger test, setting a baseline standard for when the government can limit political speech.'
+);
+
+
+INSERT INTO cases (
+    name, year, court, facts, plaintiff_argument,
+    defendant_argument, ruling, opinion, significance
+) VALUES (
+    'Baker v. Carr', '1962', 'United States Supreme Court',
+    'Tennessee failed to reapportion its General Assembly since 1901, causing severe malapportionment favoring rural voters over urban residents.',
+    'Urban voters argued malapportionment denied equal protection under the law.',
+    'Tennessee argued redistricting was a non-justiciable political question.',
+    'The Court held apportionment claims are justiciable under the Equal Protection Clause.',
+    'Justice Brennan noted malapportionment claims do not present a political question.',
+    'Established the "one person, one vote" principle.'
 );
 
 COMMIT;

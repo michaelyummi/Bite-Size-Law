@@ -82,9 +82,27 @@ def _ensure_db_from_sql(db_path, sql_path):
         sql = f.read()
     if not sql.strip():
         return
+
     conn = sqlite3.connect(db_path)
     try:
-        conn.executescript(sql)
+        buffer = ""
+        for line in sql.splitlines():
+            stripped = line.strip()
+            if not stripped or stripped.startswith("--"):
+                continue
+            buffer += line + "\n"
+            if sqlite3.complete_statement(buffer):
+                statement = buffer.strip()
+                buffer = ""
+                upper = statement.upper()
+                if upper.startswith("PRAGMA") or upper.startswith("BEGIN") or upper.startswith("COMMIT") or upper.startswith("ROLLBACK"):
+                    continue
+                conn.execute(statement)
+        if buffer.strip():
+            statement = buffer.strip()
+            upper = statement.upper()
+            if not (upper.startswith("PRAGMA") or upper.startswith("BEGIN") or upper.startswith("COMMIT") or upper.startswith("ROLLBACK")):
+                conn.execute(statement)
         conn.commit()
     finally:
         conn.close()
@@ -139,7 +157,13 @@ def ensure_database_matches_seed(db_path=None):
     sql_path = os.path.join(BASE_DIR, "database", "cases.sql")
     if not os.path.exists(sql_path):
         return
+
     if not os.path.exists(db_path):
+        _ensure_db_from_sql(db_path, sql_path)
+        return
+
+    if os.path.getmtime(sql_path) > os.path.getmtime(db_path):
+        os.remove(db_path)
         _ensure_db_from_sql(db_path, sql_path)
         return
 
@@ -155,6 +179,12 @@ def ensure_database_matches_seed(db_path=None):
             return
     finally:
         conn.close()
+
+
+def refresh_case_data_if_needed(db_path=None):
+    global CASE_DATA
+    ensure_database_matches_seed(db_path)
+    CASE_DATA = load_cases_from_db(db_path)
 
 
 def load_cases_from_db(db_path=None):
@@ -332,12 +362,14 @@ ensure_saved_case_tables()
 
 @app.route("/api/cases", methods=["GET"])
 def api_cases():
+    refresh_case_data_if_needed()
     case_names = [entry["name"] for entry in CASE_DATA.values()]
     return jsonify({"cases": sorted(case_names)})
 
 
 @app.route("/api/cases/all", methods=["GET"])
 def api_cases_all():
+    refresh_case_data_if_needed()
     conn = get_db_connection()
     try:
         rows = conn.execute(
