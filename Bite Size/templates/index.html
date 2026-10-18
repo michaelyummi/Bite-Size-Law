@@ -12,9 +12,11 @@
     <h1>Bite Size Law</h1>
 
     <div class="tab-bar" role="tablist" aria-label="Case views">
-      <button type="button" class="tab-btn active" data-tab="research">Research</button>
-      <button type="button" class="tab-btn" data-tab="saved">Saved Cases</button>
+      <button type="button" class="tab-btn active" data-tab="research">Cases</button>
       <button type="button" class="tab-btn" data-tab="database">Case Database</button>
+      <button type="button" class="tab-btn" data-tab="saved">Saved Files</button>
+      <button type="button" class="tab-btn" data-tab="regulations">Congressional Bills</button>
+      <button type="button" class="tab-btn" data-tab="regulations-db">Bills Database</button>
     </div>
 
     <section id="research-view" class="tab-panel active">
@@ -96,7 +98,7 @@
 
     <section id="saved-view" class="tab-panel">
       <div class="saved-header">
-        <h2>Saved Cases</h2>
+        <h2>Saved Files</h2>
       </div>
 
       <form id="folder-form" class="folder-form">
@@ -171,6 +173,120 @@
         </div>
       </div>
     </section>
+
+    <section id="regulations-view" class="tab-panel">
+      <h3>Search a local congressional bill</h3>
+      <p class="example">Example: "SAFE Drugs Act"</p>
+
+      <form id="regulation-form">
+        <div class="button-row">
+          <input type="text" id="regulation-input" placeholder="Type in a bill name..." autocomplete="off" required class="search-input-match" />
+          <button type="submit" id="generate-regulation-btn">Generate Bill</button>
+          <button type="button" id="add-regulation-btn">Add Bill</button>
+          <button type="button" id="clear-regulation-btn" class="clear-btn">Clear Bill</button>
+        </div>
+      </form>
+
+      <div id="add-regulation-panel" class="add-case-panel" style="display: none; margin-top: 16px;">
+        <form id="add-regulation-form">
+          <div class="field-grid">
+            <label>
+              Bill name
+              <input type="text" name="name" placeholder="e.g., SAFE Drugs Act" required />
+            </label>
+            <label>
+              Legislative body
+              <input type="text" name="legislative_body" placeholder="U.S. House of Representatives" />
+            </label>
+            <label>
+              Leading agency
+              <input type="text" name="leading_agency" placeholder="Senate Health Committee" />
+            </label>
+            <label>
+              Key dates
+              <input type="text" name="key_dates" placeholder="2024 adoption, 2025 compliance date" />
+            </label>
+            <label class="full-width">
+              Issue
+              <textarea name="summary_of_facts" rows="3" placeholder="Describe the background and context..."></textarea>
+            </label>
+            <label class="full-width">
+              Legislation
+              <textarea name="issue" rows="3" placeholder="What legal or policy issue did the bill address?"></textarea>
+            </label>
+          </div>
+          <div class="button-row" style="margin-top: 12px;">
+            <button type="submit">Save Bill</button>
+            <button type="button" id="cancel-add-regulation-btn" class="clear-btn">Cancel</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="regulation-suggestions" class="suggestions" aria-live="polite"></div>
+
+      <div id="regulation-result" class="result-box">
+        <p>Bill summary will appear here.</p>
+      </div>
+
+      <div id="save-regulation-to-folder-panel" class="save-folder-panel" style="display:none;">
+        <label for="save-regulation-folder-select">Save this bill to a folder</label>
+        <div class="save-folder-row">
+          <select id="save-regulation-folder-select" aria-label="Saved bill folders">
+            <option value="">No folders available</option>
+          </select>
+          <button type="button" id="save-regulation-to-folder-btn">Save to Folder</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="regulations-db-view" class="tab-panel">
+      <div class="database-header">
+        <h2>Bills Database</h2>
+      </div>
+
+      <div class="database-layout">
+        <div class="database-list-panel">
+          <input id="regulation-database-search" type="text" placeholder="Search bills database..." autocomplete="off" />
+          <div id="regulation-database-list" class="database-case-list"></div>
+        </div>
+
+        <div class="database-editor-panel">
+          <form id="regulation-database-form" class="database-case-form">
+            <input type="hidden" id="regulation-database-id" name="id" />
+            <div class="field-grid">
+              <label>
+                Bill name
+                <input type="text" name="name" required />
+              </label>
+              <label>
+                Legislative body
+                <input type="text" name="legislative_body" />
+              </label>
+              <label>
+                Leading agency
+                <input type="text" name="leading_agency" />
+              </label>
+              <label>
+                Key dates
+                <input type="text" name="key_dates" />
+              </label>
+              <label class="full-width">
+                Issue
+                <textarea name="summary_of_facts" rows="3"></textarea>
+              </label>
+              <label class="full-width">
+                Legislation
+                <textarea name="issue" rows="3"></textarea>
+              </label>
+            </div>
+            <div class="button-row database-form-actions">
+              <button type="submit">Save Changes</button>
+              <button type="button" id="regulation-database-reset-btn" class="clear-btn">Reset</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
   </div>
 
   <script>
@@ -192,9 +308,25 @@
     const savedCaseDetail = document.getElementById('saved-case-detail');
     const databaseSearchInput = document.getElementById('database-search');
     const databaseCaseForm = document.getElementById('database-case-form');
+    const regulationForm = document.getElementById('regulation-form');
+    const regulationInput = document.getElementById('regulation-input');
+    const regulationResult = document.getElementById('regulation-result');
+    const regulationSuggestions = document.getElementById('regulation-suggestions');
+    const addRegulationBtn = document.getElementById('add-regulation-btn');
+    const addRegulationPanel = document.getElementById('add-regulation-panel');
+    const addRegulationForm = document.getElementById('add-regulation-form');
+    const cancelAddRegulationBtn = document.getElementById('cancel-add-regulation-btn');
+    const saveRegulationToFolderPanel = document.getElementById('save-regulation-to-folder-panel');
+    const saveRegulationFolderSelect = document.getElementById('save-regulation-folder-select');
+    const saveRegulationToFolderBtn = document.getElementById('save-regulation-to-folder-btn');
+    const regulationDatabaseSearchInput = document.getElementById('regulation-database-search');
+    const regulationDatabaseForm = document.getElementById('regulation-database-form');
     let allCases = [];
+    let allRegulations = [];
     let databaseCases = [];
+    let databaseRegulations = [];
     let currentCaseSummary = null;
+    let currentRegulationSummary = null;
     let expandedFolderId = null;
 
     function normalizeText(value) {
@@ -329,23 +461,35 @@
         const data = await response.json();
         const folders = Array.isArray(data.folders) ? data.folders : [];
 
-        if (!folders.length) {
-          saveFolderSelect.innerHTML = '<option value="">No folders available</option>';
-          saveFolderSelect.disabled = true;
-          saveCaseToFolderBtn.disabled = true;
-          return folders;
-        }
+        const renderOptions = (selectElement, buttonElement) => {
+          if (!folders.length) {
+            selectElement.innerHTML = '<option value="">No folders available</option>';
+            selectElement.disabled = true;
+            if (buttonElement) {
+              buttonElement.disabled = true;
+            }
+            return;
+          }
 
-        saveFolderSelect.innerHTML = folders
-          .map((folder) => `<option value="${folder.id}">${folder.name}</option>`)
-          .join('');
-        saveFolderSelect.disabled = false;
-        saveCaseToFolderBtn.disabled = false;
+          selectElement.innerHTML = folders
+            .map((folder) => `<option value="${folder.id}">${folder.name}</option>`)
+            .join('');
+          selectElement.disabled = false;
+          if (buttonElement) {
+            buttonElement.disabled = false;
+          }
+        };
+
+        renderOptions(saveFolderSelect, saveCaseToFolderBtn);
+        renderOptions(saveRegulationFolderSelect, saveRegulationToFolderBtn);
         return folders;
       } catch (error) {
         saveFolderSelect.innerHTML = '<option value="">No folders available</option>';
         saveFolderSelect.disabled = true;
         saveCaseToFolderBtn.disabled = true;
+        saveRegulationFolderSelect.innerHTML = '<option value="">No folders available</option>';
+        saveRegulationFolderSelect.disabled = true;
+        saveRegulationToFolderBtn.disabled = true;
         return [];
       }
     }
@@ -356,14 +500,16 @@
     }
 
     function renderSavedCaseDetail(folderName, caseItem) {
-      savedCaseDetail.style.display = 'block';
-      savedCaseDetail.innerHTML = `
-        <div class="saved-case-detail-card">
-          <div class="saved-case-detail-header">
-            <h3>${caseItem.name || 'Saved Case'}</h3>
-            <button type="button" id="close-saved-case-btn" class="clear-btn">Close Case</button>
-          </div>
-          <p><strong>Folder:</strong> ${folderName}</p>
+      const itemLabel = caseItem.item_type === 'bill' ? 'Bill' : 'Case';
+      const detailBody = caseItem.item_type === 'bill'
+        ? `
+          <p><strong>Legislative Body:</strong> ${caseItem.legislative_body || 'Not specified'}</p>
+          <p><strong>Leading Agency:</strong> ${caseItem.leading_agency || 'Not specified'}</p>
+          <p><strong>Key Dates:</strong> ${caseItem.key_dates || 'Not specified'}</p>
+          <p><strong>Issue:</strong> ${caseItem.summary_of_facts || 'Not provided'}</p>
+          <p><strong>Legislation:</strong> ${caseItem.issue || 'Not provided'}</p>
+        `
+        : `
           <p><strong>Year:</strong> ${caseItem.year || 'Not specified'}</p>
           <p><strong>Court:</strong> ${caseItem.court || 'Not specified'}</p>
           <p><strong>Facts:</strong> ${caseItem.facts || 'Not provided'}</p>
@@ -372,6 +518,18 @@
           <p><strong>Ruling:</strong> ${caseItem.ruling || 'Not provided'}</p>
           <p><strong>Opinion:</strong> ${caseItem.opinion || 'Not provided'}</p>
           <p><strong>Significance:</strong> ${caseItem.significance || 'Not provided'}</p>
+        `;
+
+      savedCaseDetail.style.display = 'block';
+      savedCaseDetail.innerHTML = `
+        <div class="saved-case-detail-card">
+          <div class="saved-case-detail-header">
+            <h3>${caseItem.name || itemLabel}</h3>
+            <button type="button" id="close-saved-case-btn" class="clear-btn">Close ${itemLabel}</button>
+          </div>
+          <p><strong>Folder:</strong> ${folderName}</p>
+          <p><strong>Type:</strong> ${itemLabel}</p>
+          ${detailBody}
         </div>
       `;
 
@@ -392,15 +550,18 @@
           const cases = Array.isArray(folder.cases) ? folder.cases : [];
           const isOpen = Number(expandedFolderId) === Number(folder.id);
           const caseMarkup = cases.length
-            ? cases.map((caseItem) => `
-                <li class="saved-case-item">
-                  <div class="saved-case-row">
-                    <button type="button" class="saved-case-link" data-folder-name="${folder.name}" data-case-name="${caseItem.name}">${caseItem.name}</button>
-                    <button type="button" class="remove-case-btn" data-case-id="${caseItem.id}" data-case-name="${caseItem.name}">Remove</button>
-                  </div>
-                </li>
-              `).join('')
-            : '<p class="saved-empty-case">No cases saved in this folder yet.</p>';
+            ? cases.map((caseItem) => {
+                const itemLabel = caseItem.item_type === 'bill' ? 'Bill' : 'Case';
+                return `
+                  <li class="saved-case-item">
+                    <div class="saved-case-row">
+                      <button type="button" class="saved-case-link" data-folder-name="${folder.name}" data-case-name="${caseItem.name}" data-case-id="${caseItem.id}" data-item-type="${caseItem.item_type || 'case'}">${caseItem.name} <span class="saved-item-type">(${itemLabel})</span></button>
+                      <button type="button" class="remove-case-btn" data-case-id="${caseItem.id}" data-case-name="${caseItem.name}" data-item-type="${caseItem.item_type || 'case'}">Remove</button>
+                    </div>
+                  </li>
+                `;
+              }).join('')
+            : '<p class="saved-empty-case">No saved items in this folder yet.</p>';
 
           return `
             <div class="saved-folder-card">
@@ -408,7 +569,6 @@
                 <h3>${folder.name}</h3>
                 <div class="folder-actions">
                   <button type="button" class="folder-toggle-btn" data-folder-id="${folder.id}">${isOpen ? 'Close Folder' : 'Open Folder'}</button>
-                  <button type="button" class="rename-folder-btn" data-folder-id="${folder.id}" data-folder-name="${folder.name}">Rename</button>
                   <button type="button" class="delete-folder-btn" data-folder-id="${folder.id}">Delete Folder</button>
                 </div>
               </div>
@@ -441,38 +601,6 @@
         });
       });
 
-      document.querySelectorAll('.rename-folder-btn').forEach((button) => {
-        button.addEventListener('click', async () => {
-          const folderId = Number(button.dataset.folderId);
-          const currentName = button.dataset.folderName || 'Folder';
-          const newName = window.prompt('Rename folder:', currentName);
-          if (newName === null) {
-            return;
-          }
-
-          const trimmedName = newName.trim();
-          if (!trimmedName) {
-            window.alert('Folder name cannot be empty.');
-            return;
-          }
-
-          const response = await fetch(`/api/saved-folders/${folderId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: trimmedName })
-          });
-
-          const data = await response.json().catch(() => ({}));
-          if (!response.ok) {
-            window.alert(data.error || 'Unable to rename folder.');
-            return;
-          }
-
-          await loadSavedCases();
-          await refreshFolderOptions();
-        });
-      });
-
       document.querySelectorAll('.folder-toggle-btn').forEach((button) => {
         button.addEventListener('click', () => {
           const folderId = Number(button.dataset.folderId);
@@ -485,8 +613,9 @@
         button.addEventListener('click', () => {
           const folderName = button.dataset.folderName;
           const caseName = button.dataset.caseName;
+          const itemType = button.dataset.itemType || 'case';
           const folder = folders.find((entry) => entry.name === folderName);
-          const caseItem = (folder && Array.isArray(folder.cases) ? folder.cases : []).find((item) => item.name === caseName);
+          const caseItem = (folder && Array.isArray(folder.cases) ? folder.cases : []).find((item) => item.name === caseName && (item.item_type || 'case') === itemType);
           if (caseItem) {
             renderSavedCaseDetail(folderName, caseItem);
           }
@@ -496,15 +625,17 @@
       document.querySelectorAll('.remove-case-btn').forEach((button) => {
         button.addEventListener('click', async () => {
           const caseId = Number(button.dataset.caseId);
-          const caseName = button.dataset.caseName || 'this case';
+          const caseName = button.dataset.caseName || 'this item';
+          const itemType = button.dataset.itemType || 'case';
           if (!window.confirm(`Remove "${caseName}" from this folder?`)) {
             return;
           }
 
-          const response = await fetch(`/api/saved-cases/${caseId}`, { method: 'DELETE' });
+          const endpoint = itemType === 'bill' ? `/api/saved-bills/${caseId}` : `/api/saved-cases/${caseId}`;
+          const response = await fetch(endpoint, { method: 'DELETE' });
           if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
-            window.alert(errorData.error || 'Unable to remove case.');
+            window.alert(errorData.error || 'Unable to remove item.');
             return;
           }
 
@@ -619,10 +750,6 @@
       event.preventDefault();
       const form = event.currentTarget;
       const caseId = Number(form.elements.id.value);
-      if (!caseId) {
-        window.alert('Select a case before saving changes.');
-        return;
-      }
 
       const payload = {
         name: form.elements.name.value,
@@ -636,21 +763,109 @@
         significance: form.elements.significance.value,
       };
 
-      const response = await fetch(`/api/cases/${caseId}`, {
-        method: 'PUT',
+      const isNewEntry = !caseId;
+      const response = await fetch(isNewEntry ? '/api/cases/add' : `/api/cases/${caseId}`, {
+        method: isNewEntry ? 'POST' : 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
-        window.alert(data.error || 'Unable to update the case.');
+        window.alert(data.error || (isNewEntry ? 'Unable to add the case.' : 'Unable to update the case.'));
         return;
       }
 
+      form.reset();
+      form.elements.id.value = '';
       await loadDatabaseCases();
       await loadCases();
-      window.alert('Case updated successfully.');
+      window.alert(isNewEntry ? 'Case added successfully.' : 'Case updated successfully.');
+    }
+
+    function renderRegulationDatabaseList(regulations) {
+      const regulationDatabaseList = document.getElementById('regulation-database-list');
+      if (!regulations.length) {
+        regulationDatabaseList.innerHTML = '<div class="database-empty">No bills in the database.</div>';
+        return;
+      }
+
+      const searchValue = normalizeText(regulationDatabaseSearchInput.value);
+      const filteredRegulations = searchValue
+        ? regulations.filter((entry) => normalizeText(entry.name).includes(searchValue))
+        : regulations;
+
+      if (!filteredRegulations.length) {
+        regulationDatabaseList.innerHTML = '<div class="database-empty">No bills match that search.</div>';
+        return;
+      }
+
+      regulationDatabaseList.innerHTML = filteredRegulations.map((entry) => `
+        <div class="database-case-item">
+          <span>${entry.name}</span>
+          <div class="database-case-actions">
+            <button type="button" class="regulation-edit-btn" data-regulation-id="${entry.id}">Edit</button>
+            <button type="button" class="regulation-remove-btn" data-regulation-id="${entry.id}">Remove</button>
+          </div>
+        </div>
+      `).join('');
+
+      document.querySelectorAll('.regulation-edit-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+          const regulationId = Number(button.dataset.regulationId);
+          const selectedRegulation = filteredRegulations.find((item) => Number(item.id) === regulationId) || regulations.find((item) => Number(item.id) === regulationId);
+          if (!selectedRegulation) {
+            return;
+          }
+
+          const form = document.getElementById('regulation-database-form');
+          form.elements.id.value = selectedRegulation.id;
+          form.elements.name.value = selectedRegulation.name || '';
+          form.elements.legislative_body.value = selectedRegulation.legislative_body || '';
+          form.elements.leading_agency.value = selectedRegulation.leading_agency || '';
+          form.elements.key_dates.value = selectedRegulation.key_dates || '';
+          form.elements.summary_of_facts.value = selectedRegulation.summary_of_facts || '';
+          form.elements.issue.value = selectedRegulation.issue || '';
+          form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+
+      document.querySelectorAll('.regulation-remove-btn').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const regulationId = Number(button.dataset.regulationId);
+          const regulationName = regulations.find((item) => Number(item.id) === regulationId)?.name || 'this bill';
+          if (!window.confirm(`Remove "${regulationName}" from the bills database?`)) {
+            return;
+          }
+
+          const response = await fetch(`/api/bills/${regulationId}`, { method: 'DELETE' });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            window.alert(data.error || 'Unable to remove bill.');
+            return;
+          }
+
+          regulationDatabaseForm.reset();
+          regulationDatabaseForm.elements.id.value = '';
+          await loadDatabaseRegulations();
+          await loadRegulations();
+        });
+      });
+    }
+
+    async function loadDatabaseRegulations() {
+      try {
+        const response = await fetch('/api/bills/all');
+        const data = await response.json();
+        const regulations = Array.isArray(data.bills) ? data.bills : [];
+        databaseRegulations = regulations;
+        renderRegulationDatabaseList(regulations);
+        return regulations;
+      } catch (error) {
+        databaseRegulations = [];
+        renderRegulationDatabaseList([]);
+        return [];
+      }
     }
 
     async function saveCurrentCaseToFolder() {
@@ -697,6 +912,133 @@
       }
     }
 
+    async function fetchRegulationSummary(regulationName) {
+      regulationResult.style.display = 'block';
+      regulationResult.innerHTML = '<p>Working on your bill summary...</p>';
+      saveRegulationToFolderPanel.style.display = 'none';
+
+      try {
+        const response = await fetch('/api/bill', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ bill_name: regulationName })
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          currentRegulationSummary = null;
+          regulationResult.innerHTML = `
+            <p><strong>${data.error || 'Something went wrong.'}</strong></p>
+            <p>Add the bill to the database using the same fields as the other entries.</p>
+          `;
+          return;
+        }
+
+        currentRegulationSummary = data;
+        regulationResult.innerHTML = `
+          <h2>${data.name || 'Bill'}</h2>
+          <p><strong>Legislative Body:</strong> ${data.legislative_body || 'Not specified'}</p>
+          <p><strong>Leading Agency:</strong> ${data.leading_agency || 'Not specified'}</p>
+          <p><strong>Key Dates:</strong> ${data.key_dates || 'Not specified'}</p>
+          <p><strong>Issue:</strong> ${data.summary_of_facts || 'Not provided'}</p>
+          <p><strong>Legislation:</strong> ${data.issue || 'Not provided'}</p>
+        `;
+
+        await refreshFolderOptions();
+        saveRegulationToFolderPanel.style.display = 'block';
+      } catch (error) {
+        currentRegulationSummary = null;
+        regulationResult.innerHTML = '<p>There was an error contacting the server.</p>';
+      }
+    }
+
+    function renderRegulationSuggestions(query = '') {
+      const trimmedQuery = query.trim();
+
+      if (!trimmedQuery) {
+        regulationSuggestions.innerHTML = '';
+        return;
+      }
+
+      const filteredRegulations = allRegulations.filter((regName) =>
+        normalizeText(regName).includes(normalizeText(trimmedQuery))
+      );
+
+      if (!filteredRegulations.length) {
+        regulationSuggestions.innerHTML = '<div class="suggestion-empty">No matching bill found.</div>';
+        return;
+      }
+
+      regulationSuggestions.innerHTML = filteredRegulations.slice(0, 8).map((regName) => `
+        <button type="button" class="suggestion-item" data-regulation-name="${regName}">${regName}</button>
+      `).join('');
+
+      regulationSuggestions.querySelectorAll('.suggestion-item').forEach((button) => {
+        button.addEventListener('click', () => {
+          const regulationName = button.dataset.regulationName;
+          regulationInput.value = regulationName;
+          regulationSuggestions.innerHTML = '';
+          fetchRegulationSummary(regulationName);
+        });
+      });
+    }
+
+    async function loadRegulations() {
+      try {
+        const response = await fetch('/api/bills');
+        const data = await response.json();
+        allRegulations = Array.isArray(data.bills) ? data.bills : [];
+      } catch (error) {
+        allRegulations = [];
+      }
+    }
+
+    async function ensureRegulationsLoaded() {
+      if (!allRegulations.length) {
+        await loadRegulations();
+      }
+    }
+
+    async function saveCurrentRegulationToFolder() {
+      if (!currentRegulationSummary) {
+        regulationResult.innerHTML = '<p>Please generate a bill summary before saving it.</p>';
+        return;
+      }
+
+      const folderId = saveRegulationFolderSelect.value;
+      if (!folderId) {
+        regulationResult.innerHTML = '<p>Please create a folder before saving a bill.</p>';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/saved-bills/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            folder_id: Number(folderId),
+            bill: currentRegulationSummary
+          })
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          regulationResult.innerHTML = `<p><strong>${data.error || 'Unable to save this bill.'}</strong></p>`;
+          return;
+        }
+
+        regulationResult.innerHTML = `
+          <h2>${currentRegulationSummary.name}</h2>
+          <p><strong>Saved to folder:</strong> ${data.folder_name}</p>
+          <p>Bill was added successfully.</p>
+        `;
+        await loadSavedCases();
+        await refreshFolderOptions();
+      } catch (error) {
+        regulationResult.innerHTML = '<p>There was an error saving the bill.</p>';
+      }
+    }
+
     async function createFolder(folderName) {
       const trimmedName = folderName.trim();
       if (!trimmedName) {
@@ -739,13 +1081,31 @@
       renderSuggestions(input.value);
     });
 
+    regulationInput.addEventListener('input', async (event) => {
+      const query = event.target.value;
+      await ensureRegulationsLoaded();
+      renderRegulationSuggestions(query);
+    });
+
+    regulationInput.addEventListener('focus', async () => {
+      await ensureRegulationsLoaded();
+      renderRegulationSuggestions(regulationInput.value);
+    });
+
     databaseSearchInput.addEventListener('input', () => {
       renderDatabaseCaseList(databaseCases);
+    });
+
+    regulationDatabaseSearchInput.addEventListener('input', () => {
+      renderRegulationDatabaseList(databaseRegulations);
     });
 
     document.addEventListener('click', (event) => {
       if (!event.target.closest('.suggestion-item') && !event.target.closest('#case-input')) {
         suggestions.innerHTML = '';
+      }
+      if (!event.target.closest('.suggestion-item') && !event.target.closest('#regulation-input')) {
+        regulationSuggestions.innerHTML = '';
       }
     });
 
@@ -780,7 +1140,32 @@
       addCaseForm.reset();
     });
 
+    document.getElementById('clear-regulation-btn').addEventListener('click', () => {
+      regulationInput.value = '';
+      regulationResult.innerHTML = '<p>Regulation summary will appear here.</p>';
+      regulationResult.style.display = 'block';
+      regulationSuggestions.innerHTML = '';
+      currentRegulationSummary = null;
+      saveRegulationToFolderPanel.style.display = 'none';
+    });
+
+    addRegulationBtn.addEventListener('click', () => {
+      const isHidden = addRegulationPanel.style.display === 'none';
+      addRegulationPanel.style.display = isHidden ? 'block' : 'none';
+      regulationResult.style.display = 'block';
+      if (isHidden) {
+        addRegulationForm.reset();
+      }
+    });
+
+    cancelAddRegulationBtn.addEventListener('click', () => {
+      addRegulationPanel.style.display = 'none';
+      regulationResult.style.display = 'block';
+      addRegulationForm.reset();
+    });
+
     saveCaseToFolderBtn.addEventListener('click', saveCurrentCaseToFolder);
+    saveRegulationToFolderBtn.addEventListener('click', saveCurrentRegulationToFolder);
 
     folderForm.addEventListener('submit', (event) => {
       event.preventDefault();
@@ -820,14 +1205,95 @@
       }
     });
 
+    addRegulationForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(addRegulationForm);
+      const payload = Object.fromEntries(formData.entries());
+
+      try {
+        const response = await fetch('/api/regulations/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          regulationResult.innerHTML = `<p><strong>${data.error || 'Unable to add regulation.'}</strong></p>`;
+          return;
+        }
+
+        addRegulationPanel.style.display = 'none';
+        addRegulationForm.reset();
+        await loadRegulations();
+        await loadDatabaseRegulations();
+        regulationInput.value = data.name || '';
+        fetchRegulationSummary(data.name || '');
+      } catch (error) {
+        regulationResult.innerHTML = '<p>There was an error saving the regulation.</p>';
+      }
+    });
+
     databaseCaseForm.addEventListener('submit', saveDatabaseCase);
     document.getElementById('database-reset-btn').addEventListener('click', () => {
       databaseCaseForm.reset();
       databaseCaseForm.elements.id.value = '';
     });
 
+    regulationForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const regulationName = regulationInput.value.trim();
+      if (!regulationName) {
+        regulationResult.innerHTML = '<p>Please type in a regulation name.</p>';
+        return;
+      }
+      fetchRegulationSummary(regulationName);
+    });
+
+    regulationDatabaseForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const regulationId = Number(form.elements.id.value);
+
+      const payload = {
+        name: form.elements.name.value,
+        legislative_body: form.elements.legislative_body.value,
+        leading_agency: form.elements.leading_agency.value,
+        key_dates: form.elements.key_dates.value,
+        summary_of_facts: form.elements.summary_of_facts.value,
+        issue: form.elements.issue.value,
+      };
+
+      const isNewEntry = !regulationId;
+      const response = await fetch(isNewEntry ? '/api/bills/add' : `/api/regulations/${regulationId}`, {
+        method: isNewEntry ? 'POST' : 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        window.alert(data.error || (isNewEntry ? 'Unable to add the bill.' : 'Unable to update the regulation.'));
+        return;
+      }
+
+      form.reset();
+      form.elements.id.value = '';
+      await loadDatabaseRegulations();
+      await loadRegulations();
+      window.alert(isNewEntry ? 'Bill added successfully.' : 'Regulation updated successfully.');
+    });
+
+    document.getElementById('regulation-database-reset-btn').addEventListener('click', () => {
+      regulationDatabaseForm.reset();
+      regulationDatabaseForm.elements.id.value = '';
+    });
+
     loadCases();
+    loadRegulations();
     loadDatabaseCases();
+    loadDatabaseRegulations();
     refreshFolderOptions();
     loadSavedCases();
   </script>

@@ -178,7 +178,8 @@ button:disabled {
   margin-top: 8px;
 }
 
-#case-input {
+#case-input,
+.search-input-match {
   width: 320px;
 }
 
@@ -438,5 +439,29 @@ button:disabled {
 .saved-empty-case {
   margin: 6px 0;
   line-height: 1.5;
+}
+
+.saved-item-type {
+  font-size: 0.8rem;
+  color: #4f5ea8;
+  font-weight: 700;
+}
+
+#regulations-view,
+#regulations-db-view {
+  margin-top: 24px;
+}
+
+#regulation-form,
+#regulation-database-form {
+  margin-top: 20px;
+}
+
+#save-regulation-folder-select {
+  min-width: 220px;
+}
+
+#regulation-result {
+  margin-top: 30px;
 }
 

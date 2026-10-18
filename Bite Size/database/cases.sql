@@ -201,4 +201,239 @@ INSERT INTO cases (
     'Established the "one person, one vote" principle.'
 );
 
+CREATE TABLE IF NOT EXISTS bills (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    leading_agency TEXT,
+    key_dates TEXT,
+    summary_of_facts TEXT,
+    issue TEXT
+);
+
+INSERT INTO bills (
+    name,
+    leading_agency,
+    key_dates,
+    summary_of_facts,
+    issue
+) VALUES (
+    'SAFE Drugs Act',
+    'Senate Health Committee',
+    '2026 introduction, 2027 hearing',
+    'The bill would expand access to treatment and tighten oversight for prescription medication safety.',
+    'The legislation addresses dangerous drug shortages and the approval process for prescription medications.'
+);
+
+INSERT INTO bills (
+    name,
+    leading_agency,
+    key_dates,
+    summary_of_facts,
+    issue
+) VALUES (
+    'Protect College Sports Act',
+    'Senate Commerce Committee',
+    'May 2026 introduced, September 2026 passed Senate',
+    'The bill standardizes college athletics by codifying student-athlete revenue sharing, creating a uniform federal NIL framework that overrides state laws, capping agent fees at 5%, guaranteeing 10-year scholarships, and extending post-eligibility medical coverage.',
+    'The legislation addresses the legal instabilities facing the NCAA due to antitrust challenges, the uncoordinated patchwork of state NIL laws, and the erosion of traditional amateurism frameworks.'
+);
+
+INSERT INTO cases (
+    name,
+    year,
+    court,
+    facts,
+    plaintiff_argument,
+    defendant_argument,
+    ruling,
+    opinion,
+    significance
+) VALUES (
+    'Website Save Test Case',
+    '2026',
+    'State Court',
+    'Facts',
+    'Argument',
+    'Defense',
+    'Ruling',
+    'Opinion',
+    'Significance'
+);
+
+INSERT INTO cases (
+    name,
+    year,
+    court,
+    facts,
+    plaintiff_argument,
+    defendant_argument,
+    ruling,
+    opinion,
+    significance
+) VALUES (
+    'Engel v. Vitale',
+    '1962',
+    'United States Supreme Court',
+    'The New York Board of Regents authorized a short, voluntary prayer for recitation at the start of the school day to encourage good citizenship.',
+    'Parents of students argued that a state-sponsored prayer in public schools violated the Establishment Clause of the First Amendment.',
+    'The school board argued the prayer was voluntary, non-denominational, and did not establish an official state religion.',
+    'The Court ruled 6-1 that state-sponsored prayer in public schools is unconstitutional.',
+    'Justice Black wrote that the constitutional prohibition against laws establishing religion means the government has no business drafting official prayers for Americans to recite.',
+    'Established that public schools cannot sponsor religious activities, strengthening the wall of separation between church and state.'
+);
+
+INSERT INTO cases (
+    name,
+    year,
+    court,
+    facts,
+    plaintiff_argument,
+    defendant_argument,
+    ruling,
+    opinion,
+    significance
+) VALUES (
+    'Tinker v. Des Moines Independent Community School District',
+    '1969',
+    'United States Supreme Court',
+    'A group of students wore black armbands to school to protest the Vietnam War and were suspended after refusing to remove them.',
+    'The students argued that the armbands were a form of protected symbolic speech under the First Amendment and did not disrupt learning.',
+    'The school district argued that the ban was necessary to maintain discipline and prevent potential school disruptions.',
+    'The Court ruled 7-2 that students do not lose their First Amendment rights to freedom of speech when they step onto school property.',
+    'Justice Fortas wrote that to justify suppressing speech, school officials must prove the conduct would "materially and substantially interfere" with the operation of the school.',
+    'Protected students'' symbolic speech rights in public schools, drawing a line between speech and disruptive conduct.'
+);
+
+INSERT INTO cases (
+    name,
+    year,
+    court,
+    facts,
+    plaintiff_argument,
+    defendant_argument,
+    ruling,
+    opinion,
+    significance
+) VALUES (
+    'New York Times Co. v. United States',
+    '1971',
+    'United States Supreme Court',
+    'The Nixon administration attempted to prevent the New York Times and Washington Post from publishing the classified "Pentagon Papers," which detailed the history of U.S. involvement in Vietnam.',
+    'The newspapers argued that the government''s attempt to halt publication was an unconstitutional prior restraint that violated freedom of the press.',
+    'The government argued that the publication of top-secret documents posed a threat to national security and executive authority.',
+    'The Court ruled 6-3 that the government did not meet the heavy burden required to justify prior restraint.',
+    'The per curiam opinion stated that any system of prior restraints comes to the Court bearing a heavy presumption against its constitutional validity.',
+    'Bolstered freedom of the press by firmly limiting the government''s ability to use "national security" to censor the media prior to publication.'
+);
+
+INSERT INTO cases (
+    name,
+    year,
+    court,
+    facts,
+    plaintiff_argument,
+    defendant_argument,
+    ruling,
+    opinion,
+    significance
+) VALUES (
+    'Wisconsin v. Yoder',
+    '1972',
+    'United States Supreme Court',
+    'Three Amish parents refused to send their children to public schools after the eighth grade, violating a Wisconsin law requiring school attendance until age 16.',
+    'The parents argued that compulsory high school attendance conflicted with the fundamental tenets of their religious beliefs and lifestyle.',
+    'Wisconsin argued that the state had a compelling interest in mandatory education to prepare citizens to participate productively in society.',
+    'The Court ruled unanimously (7-0) that the state''s interest in compulsory education was outweighed by the religious freedom of the Amish.',
+    'Chief Justice Burger noted that an additional one or two years of formal high school would not produce the benefits the state cited and would severely burden Amish religious practices.',
+    'Affirmed that the Free Exercise Clause protects religious practices against state laws, unless the state can show a compelling interest using the least restrictive means.'
+);
+
+INSERT INTO cases (
+    name,
+    year,
+    court,
+    facts,
+    plaintiff_argument,
+    defendant_argument,
+    ruling,
+    opinion,
+    significance
+) VALUES (
+    'Roe v. Wade',
+    '1973',
+    'United States Supreme Court',
+    'A Texas resident challenged a state law making abortion illegal except by doctor''s orders to save a woman''s life.',
+    'The plaintiff argued that the Texas statutes unconstitutionally invaded her right to personal privacy protected by the First, Fourth, Fifth, Ninth, and Fourteenth Amendments.',
+    'Texas argued that it had a compelling interest in protecting the life of the unborn fetus from the moment of conception.',
+    'The Court ruled 7-2 that a woman''s right to an abortion fell within the right to privacy protected by the Fourteenth Amendment.',
+    'Justice Blackmun established a trimester framework, ruling that the state cannot restrict abortion in the first trimester, but can implement increasing regulations in the second and third trimesters.',
+    'Legalized abortion nationwide by linking it to a constitutional right to privacy (overturned in 2022 by Dobbs v. Jackson.)'
+);
+
+INSERT INTO cases (
+    name,
+    year,
+    court,
+    facts,
+    plaintiff_argument,
+    defendant_argument,
+    ruling,
+    opinion,
+    significance
+) VALUES (
+    'Shaw v. Reno',
+    '1993',
+    'United States Supreme Court',
+    'North Carolina created a highly unusually shaped, 160-mile-long majority-black legislative district to comply with the Voting Rights Act of 1965.',
+    'White voters argued that the district''s bizarre shape was drawn solely along racial lines, violating the Equal Protection Clause.',
+    'The state argued that the district was constitutional because its purpose was to comply with federal law and increase minority representation.',
+    'The Court ruled 5-4 that a district drawn to be so bizarre that it separates voters based on race must face strict scrutiny.',
+    'Justice O''Connor wrote that the district''s shape bore an uncomfortable resemblance to political apartheid and sent a message that elected officials should represent only one racial group.',
+    'Established that while race can be considered in redistricting, race-conscious gerrymandering must satisfy strict scrutiny and cannot be the sole factor in drawing bizarrely shaped districts.'
+);
+
+INSERT INTO cases (
+    name,
+    year,
+    court,
+    facts,
+    plaintiff_argument,
+    defendant_argument,
+    ruling,
+    opinion,
+    significance
+) VALUES (
+    'McDonald v. Chicago',
+    '2010',
+    'United States Supreme Court',
+    'Following a previous SCOTUS ruling striking down a federal handgun ban (District of Columbia v. Heller), residents challenged a strict handgun ban enacted by the city of Chicago.',
+    'Residents argued that the Second Amendment right to keep and bear arms applies to state and local governments, not just the federal government.',
+    'Chicago argued that states and cities have police powers to regulate or ban handguns to maintain public safety and reduce crime.',
+    'The Court ruled 5-4 that the Fourteenth Amendment makes the Second Amendment right to keep and bear arms for self-defense applicable to the states.',
+    'Justice Alito wrote that the right to self-defense is deeply rooted in the nation''s history and tradition, making it a fundamental right.',
+    'Incorporated the Second Amendment right to bear arms to state and local governments via the Due Process Clause of the Fourteenth Amendment.'
+);
+
+INSERT INTO cases (
+    name,
+    year,
+    court,
+    facts,
+    plaintiff_argument,
+    defendant_argument,
+    ruling,
+    opinion,
+    significance
+) VALUES (
+    'Citizens United v. Federal Election Commission',
+    '2010',
+    'United States Supreme Court',
+    'A conservative non-profit organization produced a critical film about Hillary Clinton and wanted to advertise and broadcast it, but was blocked by the Bipartisan Campaign Reform Act (BCRA), which restricted corporate funding of political broadcasts.',
+    'Citizens United argued that the restrictions on corporate funding of independent political broadcasts violated the First Amendment freedom of speech.',
+    'The FEC argued that limits on corporate spending were necessary to prevent political corruption and maintain public confidence in elections.',
+    'The Court ruled 5-4 that corporate funding of independent political broadcasts in candidate elections cannot be limited.',
+    'Justice Kennedy wrote that the First Amendment protects political speech, and the government cannot suppress political speech simply because the speaker is a corporation.',
+    'Ruled that corporations and unions have First Amendment speech rights, leading to the creation of Super PACs and a massive increase in independent campaign spending.'
+);
+
 COMMIT;
