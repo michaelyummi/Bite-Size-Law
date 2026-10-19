@@ -1,4 +1,4 @@
---sqlite3 "Bite Size/database/cases.db"
+--sqlite3 "Bite Size/database/cases.db"          RUN THIS TO OPEN COMMANDS
 --SELECT * FROM cases;        SHOWS EVERYTHING IN CASES DB
 --SELECT * FROM saved_case_folders;
 --SELECT * FROM saved_cases;
@@ -212,12 +212,7 @@ CREATE TABLE IF NOT EXISTS bills (
 );
 
 INSERT INTO bills (
-    name,
-    legislative_body,
-    leading_agency,
-    key_dates,
-    summary_of_facts,
-    issue
+    name, legislative_body, leading_agency, key_dates, summary_of_facts, issue
 ) VALUES (
     'SAFE Drugs Act',
     'U.S. House of Representatives',
@@ -228,12 +223,7 @@ INSERT INTO bills (
 );
 
 INSERT INTO bills (
-    name,
-    legislative_body,
-    leading_agency,
-    key_dates,
-    summary_of_facts,
-    issue
+    name, legislative_body, leading_agency, key_dates, summary_of_facts, issue
 ) VALUES (
     'Protect College Sports Act',
     'U.S. Senate',

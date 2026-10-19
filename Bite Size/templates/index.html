@@ -10,7 +10,7 @@
 <body>
   <div class="container">
     <h1>Bite Size Law</h1>
-
+{% comment %} Buttons for top tabs and their corresponding screens {% endcomment %}
     <div class="tab-bar" role="tablist" aria-label="Case views">
       <button type="button" class="tab-btn active" data-tab="research">Cases</button>
       <button type="button" class="tab-btn" data-tab="database">Case Database</button>
@@ -18,7 +18,7 @@
       <button type="button" class="tab-btn" data-tab="regulations">Congressional Bills</button>
       <button type="button" class="tab-btn" data-tab="regulations-db">Bills Database</button>
     </div>
-
+{% comment %}Sets up screen for case research tab (margins handled in css)  {% endcomment %}
     <section id="research-view" class="tab-panel active">
       <h3>Insert a case name</h3>
       <p class="example">Example: "Marbury v. Madison"</p>
@@ -31,7 +31,7 @@
           <button type="button" id="clear-case-btn" class="clear-btn">Clear Case</button>
         </div>
       </form>
-
+{% comment %} Set up for each selected case {% endcomment %}
       <div id="add-case-panel" class="add-case-panel" style="display: none; margin-top: 16px;">
         <form id="add-case-form">
           <div class="field-grid">

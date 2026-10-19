@@ -1,8 +1,12 @@
+#files
 import os
+#text handling
 import re
+#search logic
 from difflib import get_close_matches
-
+#web app logic and web serving
 from flask import Flask, jsonify, render_template, request
+#connects database to python backend logic
 import sqlite3
 
 #start server with following command:
@@ -25,6 +29,7 @@ CASE_DATA = {}
 BILL_DATA = {}
 REGULATION_DATA = BILL_DATA
 
+#Legal Cases
 CASE_FIELDS = [
     "name",
     "year",
@@ -37,6 +42,7 @@ CASE_FIELDS = [
     "significance",
 ]
 
+#Congressional Bills
 BILL_FIELDS = [
     "name",
     "legislative_body",
@@ -59,6 +65,7 @@ REQUIRED_CASE_NAMES = {
     "United States v. Lopez",
 }
 
+#Functions for search mechanism
 
 def normalize_case_name(case_name):
     return re.sub(r"[^a-z0-9\s]", "", (case_name or "").lower()).strip()
@@ -71,6 +78,7 @@ def normalize_bill_name(bill_name):
 def normalize_regulation_name(regulation_name):
     return normalize_bill_name(regulation_name)
 
+#Function for case look up
 
 def find_case(query):
     cleaned_query = normalize_case_name(query)
@@ -88,6 +96,7 @@ def find_case(query):
 
     return None
 
+#Database function logic
 
 def _ensure_db_from_sql(db_path, sql_path):
     """If the SQLite DB doesn't exist, create it by running the SQL script at `sql_path`.
@@ -324,6 +333,7 @@ def _backup_saved_tables(db_path):
     finally:
         conn.close()
 
+#Backup database function/logic
 
 def _restore_saved_tables(db_path, backup):
     if not backup:
@@ -352,6 +362,7 @@ def _restore_saved_tables(db_path, backup):
     finally:
         conn.close()
 
+#backup logic
 
 def _rebuild_database_from_seed(db_path, sql_path):
     saved_backup = _backup_saved_tables(db_path)
@@ -448,6 +459,7 @@ def load_cases_from_db(db_path=None):
 
     return cases
 
+#template for not found database
 
 def normalize_case_payload(payload, case_name=None, source="known_case"):
     case_name = (case_name or payload.get("name") or "Unknown case").strip() or "Unknown case"
@@ -569,6 +581,7 @@ def insert_case_into_db(payload):
     CASE_DATA = load_cases_from_db()
     return case_record
 
+#Bill layout
 
 def normalize_bill_payload(payload, bill_name=None, source="known_bill"):
     bill_name = (bill_name or payload.get("name") or "Unknown bill").strip() or "Unknown bill"
@@ -1372,11 +1385,13 @@ def api_save_bill_to_folder():
         }
     })
 
+#Input from user logged in server terminal
 
 @app.route("/api/saved-regulations/save", methods=["POST"])
 def api_save_regulation_to_folder():
     return api_save_bill_to_folder()
 
+#Input from user logged in server terminal
 
 @app.route("/api/saved-bills/<int:bill_id>", methods=["DELETE"])
 def api_delete_saved_bill(bill_id):
@@ -1391,11 +1406,13 @@ def api_delete_saved_bill(bill_id):
     finally:
         conn.close()
 
+#Input from user logged in server terminal
 
 @app.route("/api/saved-regulations/<int:regulation_id>", methods=["DELETE"])
 def api_delete_saved_regulation(regulation_id):
     return api_delete_saved_bill(regulation_id)
 
+#Input from user logged in server terminal
 
 @app.route("/api/cases/add", methods=["POST"])
 def api_add_case():
@@ -1412,6 +1429,7 @@ def api_add_case():
 
     return jsonify(case_record), 201
 
+#Input from user logged in server terminal
 
 @app.route("/api/bills/add", methods=["POST"])
 def api_add_bill():
@@ -1428,11 +1446,13 @@ def api_add_bill():
 
     return jsonify(bill_record), 201
 
+#Input from user logged in server terminal
 
 @app.route("/api/regulations/add", methods=["POST"])
 def api_add_regulation():
     return api_add_bill()
 
+#function for bill insertion
 
 def insert_bill_into_db(payload):
     global BILL_DATA
@@ -1476,10 +1496,12 @@ def insert_bill_into_db(payload):
     REGULATION_DATA = BILL_DATA
     return bill_record
 
+#bills added to database
 
 def insert_regulation_into_db(payload):
     return insert_bill_into_db(payload)
 
+#Ends off the code and runs the website via flask
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
